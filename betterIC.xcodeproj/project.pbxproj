@@ -10,10 +10,14 @@
 		6443B1972A7A4ED0005DDEA3 /* betterICApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443B1962A7A4ED0005DDEA3 /* betterICApp.swift */; };
 		6443B1992A7A4ED0005DDEA3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443B1982A7A4ED0005DDEA3 /* ContentView.swift */; };
 		6443B19B2A7A4ED1005DDEA3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6443B19A2A7A4ED1005DDEA3 /* Assets.xcassets */; };
-		6443B19E2A7A4ED1005DDEA3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6443B19D2A7A4ED1005DDEA3 /* Preview Assets.xcassets */; };
 		6443B1A82A7A4ED2005DDEA3 /* betterICTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443B1A72A7A4ED2005DDEA3 /* betterICTests.swift */; };
 		6443B1B22A7A4ED2005DDEA3 /* betterICUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443B1B12A7A4ED2005DDEA3 /* betterICUITests.swift */; };
 		6443B1B42A7A4ED2005DDEA3 /* betterICUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443B1B32A7A4ED2005DDEA3 /* betterICUITestsLaunchTests.swift */; };
+		6443B1C42A7B88D2005DDEA3 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443B1C32A7B88D2005DDEA3 /* AuthView.swift */; };
+		6443B1C62A7B92D8005DDEA3 /* GradesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443B1C52A7B92D8005DDEA3 /* GradesView.swift */; };
+		6443B1C82A7B9350005DDEA3 /* AttendanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443B1C72A7B9350005DDEA3 /* AttendanceView.swift */; };
+		6443B1CA2A7B9366005DDEA3 /* YouView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443B1C92A7B9366005DDEA3 /* YouView.swift */; };
+		6443B1CC2A7B99A7005DDEA3 /* GetData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443B1CB2A7B99A7005DDEA3 /* GetData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,12 +42,16 @@
 		6443B1962A7A4ED0005DDEA3 /* betterICApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = betterICApp.swift; sourceTree = "<group>"; };
 		6443B1982A7A4ED0005DDEA3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		6443B19A2A7A4ED1005DDEA3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		6443B19D2A7A4ED1005DDEA3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		6443B1A32A7A4ED1005DDEA3 /* betterICTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = betterICTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6443B1A72A7A4ED2005DDEA3 /* betterICTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = betterICTests.swift; sourceTree = "<group>"; };
 		6443B1AD2A7A4ED2005DDEA3 /* betterICUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = betterICUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6443B1B12A7A4ED2005DDEA3 /* betterICUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = betterICUITests.swift; sourceTree = "<group>"; };
 		6443B1B32A7A4ED2005DDEA3 /* betterICUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = betterICUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		6443B1C32A7B88D2005DDEA3 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
+		6443B1C52A7B92D8005DDEA3 /* GradesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradesView.swift; sourceTree = "<group>"; };
+		6443B1C72A7B9350005DDEA3 /* AttendanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttendanceView.swift; sourceTree = "<group>"; };
+		6443B1C92A7B9366005DDEA3 /* YouView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouView.swift; sourceTree = "<group>"; };
+		6443B1CB2A7B99A7005DDEA3 /* GetData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,20 +102,17 @@
 		6443B1952A7A4ED0005DDEA3 /* betterIC */ = {
 			isa = PBXGroup;
 			children = (
-				6443B1962A7A4ED0005DDEA3 /* betterICApp.swift */,
+				6443B1C32A7B88D2005DDEA3 /* AuthView.swift */,
 				6443B1982A7A4ED0005DDEA3 /* ContentView.swift */,
+				6443B1C52A7B92D8005DDEA3 /* GradesView.swift */,
+				6443B1C72A7B9350005DDEA3 /* AttendanceView.swift */,
+				6443B1C92A7B9366005DDEA3 /* YouView.swift */,
+				6443B1962A7A4ED0005DDEA3 /* betterICApp.swift */,
+				6443B1CB2A7B99A7005DDEA3 /* GetData.swift */,
 				6443B19A2A7A4ED1005DDEA3 /* Assets.xcassets */,
-				6443B19C2A7A4ED1005DDEA3 /* Preview Content */,
+				6443B1C22A7B82B3005DDEA3 /* Preview Content */,
 			);
 			path = betterIC;
-			sourceTree = "<group>";
-		};
-		6443B19C2A7A4ED1005DDEA3 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				6443B19D2A7A4ED1005DDEA3 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		6443B1A62A7A4ED2005DDEA3 /* betterICTests */ = {
@@ -125,6 +130,13 @@
 				6443B1B32A7A4ED2005DDEA3 /* betterICUITestsLaunchTests.swift */,
 			);
 			path = betterICUITests;
+			sourceTree = "<group>";
+		};
+		6443B1C22A7B82B3005DDEA3 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -231,7 +243,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6443B19E2A7A4ED1005DDEA3 /* Preview Assets.xcassets in Resources */,
 				6443B19B2A7A4ED1005DDEA3 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -257,8 +268,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6443B1C62A7B92D8005DDEA3 /* GradesView.swift in Sources */,
 				6443B1992A7A4ED0005DDEA3 /* ContentView.swift in Sources */,
+				6443B1CA2A7B9366005DDEA3 /* YouView.swift in Sources */,
 				6443B1972A7A4ED0005DDEA3 /* betterICApp.swift in Sources */,
+				6443B1C42A7B88D2005DDEA3 /* AuthView.swift in Sources */,
+				6443B1CC2A7B99A7005DDEA3 /* GetData.swift in Sources */,
+				6443B1C82A7B9350005DDEA3 /* AttendanceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -9,6 +9,7 @@
 import SwiftUI
 import Foundation
 
+//main list
 struct GradesView: View {
     @State private var root: [Quarter] = []
     @State private var inQuarter: Int = 0
@@ -17,8 +18,14 @@ struct GradesView: View {
         NavigationStack {
             // Show the List only if data is available
             if !root.isEmpty {
-                List(root[0].courses) { course in
-                    CourseElement(courseName: course.name, teacher: course.teacher, letterGrade: "N/A", quarter: root[0].name)
+                List {
+                    ForEach(Array(root[inQuarter].courses.enumerated()), id: \.element._id) { (index, course) in
+                        CourseElement(root: $root,
+                                      inQuarter: $inQuarter,
+                                      courseIndex: index,
+                                      courseName: course.name,
+                                      teacher: course.teacher)
+                    }
                 }.navigationTitle("Your Courses")
             } else {
                 Text("No courses available. Check back later.")
@@ -27,52 +34,28 @@ struct GradesView: View {
         }
         .onAppear {
             let getData = GetData()
-            getData.fetch(from: "http://localhost:3000/api/courses") { result in
-                switch result {
-                    case .success(let data):
-                    print("got data")
-                        do {
-                            let decoder = JSONDecoder()
-                            let decodedRoot = try decoder.decode([Quarter].self, from: data)
-                            self.root = decodedRoot
-                            print(root)
-                        } catch {
-                            // Handle decoding error
-                        }
-                    case .failure(let error):
-                        print(error)
-                }
+            getData.processData { processedRoot in
+                self.root = processedRoot
+                self.inQuarter = getData.findQuarter()
             }
-            
-            //we have our data for each quarter in root. however, we don't know what quarter we are in
-//            let dateFormatter = DateFormatter()
-//            dateFormatter.dateFormat = "yyyy-mm-dd"
-//            let currentDate = Date()
-//
-//            if currentDate >= dateFormatter.date(from: root[3].startDate) {
-//                inQuarter = 4
-//            } else if currentDate >= root[2].startDate {
-//                inQuarter = 3
-//            } else if currentDate >= root[1].startDate {
-//                inQuarter = 2
-//            } currentDate >= root[3].startDate {
-//                inQuarter = 1
-//            }
         }
     }
 }
 
+//list element
 struct CourseElement: View {
+    @Binding var root: [Quarter]
+    @Binding var inQuarter: Int
+    
+    let courseIndex: Int
     let courseName: String
     let teacher: String
-    let letterGrade: String
-    let quarter: String
     
     var body: some View {
-        NavigationLink(destination: GradesExpanded()) {
+        NavigationLink(destination: GradesExpanded(root: $root, inQuarter: $inQuarter, courseIndex: courseIndex)) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(teacher + " - " + quarter)
+                    Text(teacher + " - Q" + String(inQuarter + 1))
                         .font(.footnote)
                         .foregroundColor(.gray)
                     Text(courseName)
@@ -80,18 +63,135 @@ struct CourseElement: View {
                         .bold()
                 }
                 Spacer()
-                Text(letterGrade)
+                Text(root[inQuarter].courses[courseIndex].grades?.score ?? "N/A")
             }
         }
     }
 }
 
+//details
 struct GradesExpanded: View {
-    @State private var root: [Quarter] = []
+    @Binding var root: [Quarter]
+    @Binding var inQuarter: Int
+    let courseIndex: Int
+    
+    @State private var selectedType = 0
+    @State private var termType = 0
     
     var body: some View {
-        VStack {
-            Text("Grades")
+        NavigationStack {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading){
+                    if selectedType == 0 {
+                        Text("Quarter Grade:")
+                            .fontWeight(.medium)
+                            .font(.system(size: 24))
+                            .padding(.top, 18)
+                    } else {
+                        Text("Semester Grade:")
+                            .fontWeight(.medium)
+                            .font(.system(size: 24))
+                            .padding(.top, 18)
+                    }
+                    if let percent = root[termType].courses[courseIndex].grades?.percent {
+                        Text("\(percent)%")
+                            .fontWeight(.bold)
+                            .font(.system(size: 52))
+                    } else {
+                        Text("N/A")
+                            .fontWeight(.bold)
+                            .font(.system(size: 52))
+                    }
+                    Picker("select", selection: $selectedType) {
+                        Text("Quarter").tag(0)
+                        Text("Semester").tag(1)
+                    }
+                    .pickerStyle(.segmented)
+                    .offset(x:0, y: -22)
+                    .frame(width:185)
+                }
+                .padding(.leading, 18.0)
+                Spacer()
+                ZStack {
+                    if let score = root[termType].courses[courseIndex].grades?.score {
+                        RoundedRectangle(cornerRadius: 10)
+                            .frame(width: 130, height: 130)
+                            .foregroundStyle(.green)
+                        Text("\(score)")
+                            .foregroundColor(.white)
+                            .fontWeight(.bold)
+                            .font(.system(size: 64))
+                    } else {
+                        RoundedRectangle(cornerRadius: 10)
+                            .frame(width: 130, height: 130)
+                            .foregroundStyle(.gray)
+                        Text("?")
+                            .foregroundColor(.white)
+                            .fontWeight(.bold)
+                            .font(.system(size: 64))
+                    }
+                }
+                .padding(.top, 22)
+                .padding(.trailing, 18)
+                .offset(x:-10, y:0)
+            }
+            Picker("select", selection: $termType) {
+                if selectedType == 0 {
+                    Text("Q1").tag(0)
+                    Text("Q2").tag(1)
+                    Text("Q3").tag(2)
+                    Text("Q4").tag(3)
+                } else {
+                    Text("S1").tag(0)
+                    Text("S2").tag(1)
+                }
+            }
+            .padding([.leading, .trailing], 18)
+            //.border(.gray)
+            .pickerStyle(.segmented)
+            .offset(x:0, y: -45)
+            
+            if !root[inQuarter].courses[courseIndex].assignments.isEmpty {
+                List {
+                    Section(header: Text("Assignments:")) {
+                        ForEach(Array(root[inQuarter].courses[courseIndex].assignments.enumerated()), id: \.element._id) { (index, assignment) in
+                            AssignmentElement(assignment: assignment)
+                        }
+                    }
+                }
+                .padding(.bottom, -45)
+                .onAppear {
+                    print("Assignments available")
+                }
+                .offset(x:0, y:-35)
+            } else {
+                List {
+                    Section(header: Text("No assignments yet")) {
+                        
+                    }
+                }
+                .padding(.bottom, -45)
+                .onAppear {
+                    print("No assignments available")
+                }
+                .offset(x:0, y:-35)
+            }
+        }
+        .navigationTitle(root[inQuarter].courses[courseIndex].name)
+    }
+}
+
+struct AssignmentElement: View {
+    @State var assignment: Assignments
+    
+    var body: some View {
+        VStack (alignment: .leading, spacing: 4) {
+            Text(assignment.category)
+                .font(.footnote)
+                .foregroundColor(.gray)
+            Text(assignment.name)
+                .font(.headline)
+                .foregroundColor(.black)
         }
     }
 }

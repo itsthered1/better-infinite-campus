@@ -12,16 +12,16 @@ import Foundation
 //main list
 struct GradesView: View {
     @State private var root: [Quarter] = []
-    @State private var inQuarter: Int = 0
+    @State private var inTerm: Int = 0
     
     var body: some View {
         NavigationStack {
             // Show the List only if data is available
             if !root.isEmpty {
                 List {
-                    ForEach(Array(root[inQuarter].courses.enumerated()), id: \.element._id) { (index, course) in
+                    ForEach(Array(root[inTerm].courses.enumerated()), id: \.element._id) { (index, course) in
                         CourseElement(root: $root,
-                                      inQuarter: $inQuarter,
+                                      inTerm: $inTerm,
                                       courseIndex: index,
                                       courseName: course.name,
                                       teacher: course.teacher)
@@ -36,7 +36,7 @@ struct GradesView: View {
             let getData = GetData()
             getData.processData { processedRoot in
                 self.root = processedRoot
-                self.inQuarter = getData.findQuarter()
+                self.inTerm = getData.findQuarter()
             }
         }
     }
@@ -45,17 +45,17 @@ struct GradesView: View {
 //list element
 struct CourseElement: View {
     @Binding var root: [Quarter]
-    @Binding var inQuarter: Int
+    @Binding var inTerm: Int
     
     let courseIndex: Int
     let courseName: String
     let teacher: String
     
     var body: some View {
-        NavigationLink(destination: GradesExpanded(root: $root, inQuarter: $inQuarter, courseIndex: courseIndex)) {
+        NavigationLink(destination: GradesExpanded(root: $root, inTerm: $inTerm, courseIndex: courseIndex)) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(teacher + " - Q" + String(inQuarter + 1))
+                    Text(teacher + " - Q" + String(inTerm + 1))
                         .font(.footnote)
                         .foregroundColor(.gray)
                     Text(courseName)
@@ -63,7 +63,7 @@ struct CourseElement: View {
                         .bold()
                 }
                 Spacer()
-                Text(root[inQuarter].courses[courseIndex].grades?.score ?? "N/A")
+                Text(root[inTerm].courses[courseIndex].grades?.score ?? "N/A")
             }
         }
     }
@@ -72,11 +72,11 @@ struct CourseElement: View {
 //details
 struct GradesExpanded: View {
     @Binding var root: [Quarter]
-    @Binding var inQuarter: Int
+    @Binding var inTerm: Int
     let courseIndex: Int
     
-    @State private var selectedType = 0
-    @State private var termType = 0
+    @State private var selectedType = 0 //quarter/tri and semester
+    @State private var selectedTerm = 0 // Q1, T1, S1
     
     var body: some View {
         NavigationStack {
@@ -93,10 +93,13 @@ struct GradesExpanded: View {
                             .font(.system(size: 24))
                             .padding(.top, 18)
                     }
-                    if let percent = root[termType].courses[courseIndex].grades?.percent {
-                        Text("\(percent)%")
+                    if let percent = root[selectedTerm].courses[courseIndex].grades?.percent {
+//                      Text("\((floor(Double(percent) * 100) / 100).removeTrailingZeros())%")
+//                          .fontWeight(.bold)
+//                          .font(.system(size: 52)) ??????? fucking numbers man
+                        Text("\(percent.removeZerosFromEnd())%")
                             .fontWeight(.bold)
-                            .font(.system(size: 52))
+                            .font(.system(size: 42))
                     } else {
                         Text("N/A")
                             .fontWeight(.bold)
@@ -107,16 +110,31 @@ struct GradesExpanded: View {
                         Text("Semester").tag(1)
                     }
                     .pickerStyle(.segmented)
-                    .offset(x:0, y: -22)
+                    .offset(x:0, y: -7)
                     .frame(width:185)
                 }
                 .padding(.leading, 18.0)
                 Spacer()
                 ZStack {
-                    if let score = root[termType].courses[courseIndex].grades?.score {
-                        RoundedRectangle(cornerRadius: 10)
-                            .frame(width: 130, height: 130)
-                            .foregroundStyle(.green)
+                    if let score = root[selectedTerm].courses[courseIndex].grades?.score {
+                        if score == "A" {
+                            RoundedRectangle(cornerRadius: 10)
+                                .frame(width: 130, height: 130)
+                                .foregroundStyle(.green)
+                        } else if score == "B" {
+                            RoundedRectangle(cornerRadius: 10)
+                                .frame(width: 130, height: 130)
+                                .foregroundStyle(.yellow)
+                        } else if score == "C" {
+                            RoundedRectangle(cornerRadius: 10)
+                                .frame(width: 130, height: 130)
+                                .foregroundStyle(.orange)
+                        } else {
+                            RoundedRectangle(cornerRadius: 10)
+                                .frame(width: 130, height: 130)
+                                .foregroundStyle(.red)
+                        }
+
                         Text("\(score)")
                             .foregroundColor(.white)
                             .fontWeight(.bold)
@@ -135,7 +153,7 @@ struct GradesExpanded: View {
                 .padding(.trailing, 18)
                 .offset(x:-10, y:0)
             }
-            Picker("select", selection: $termType) {
+            Picker("select", selection: $selectedTerm) {
                 if selectedType == 0 {
                     Text("Q1").tag(0)
                     Text("Q2").tag(1)
@@ -149,13 +167,15 @@ struct GradesExpanded: View {
             .padding([.leading, .trailing], 18)
             //.border(.gray)
             .pickerStyle(.segmented)
-            .offset(x:0, y: -45)
+            .offset(x:0, y: -30)
             
-            if !root[inQuarter].courses[courseIndex].assignments.isEmpty {
+            if !root[selectedTerm].courses[courseIndex].assignments.isEmpty {
                 List {
                     Section(header: Text("Assignments:")) {
-                        ForEach(Array(root[inQuarter].courses[courseIndex].assignments.enumerated()), id: \.element._id) { (index, assignment) in
-                            AssignmentElement(assignment: assignment)
+                        ForEach(Array(root[selectedTerm].courses[courseIndex].assignments.enumerated()), id: \.element._id) { (index, assignment) in
+                            if (assignment.termSeq - 1) == inTerm {
+                                AssignmentElement(assignment: assignment)
+                            }
                         }
                     }
                 }
@@ -163,7 +183,7 @@ struct GradesExpanded: View {
                 .onAppear {
                     print("Assignments available")
                 }
-                .offset(x:0, y:-35)
+                .offset(x:0, y:-25)
             } else {
                 List {
                     Section(header: Text("No assignments yet")) {
@@ -177,7 +197,7 @@ struct GradesExpanded: View {
                 .offset(x:0, y:-35)
             }
         }
-        .navigationTitle(root[inQuarter].courses[courseIndex].name)
+        .navigationTitle(root[inTerm].courses[courseIndex].name)
     }
 }
 
@@ -185,13 +205,20 @@ struct AssignmentElement: View {
     @State var assignment: Assignments
     
     var body: some View {
-        VStack (alignment: .leading, spacing: 4) {
-            Text(assignment.category)
-                .font(.footnote)
-                .foregroundColor(.gray)
-            Text(assignment.name)
-                .font(.headline)
-                .foregroundColor(.black)
+        HStack {
+            VStack (alignment: .leading, spacing: 4) {
+                Text(assignment.category)
+                    .font(.footnote)
+                    .foregroundColor(.gray)
+                Text(assignment.name)
+                    .font(.headline)
+            }
+            Spacer()
+            if let points = assignment.score {
+                Text("\(points.removeZerosFromEnd())/" + "\(assignment.totalPoints.removeZerosFromEnd())")
+            } else {
+                Text("N/A")
+            }
         }
     }
 }
@@ -199,5 +226,15 @@ struct AssignmentElement: View {
 struct GradesView_Previews: PreviewProvider {
     static var previews: some View {
         GradesView()
+    }
+}
+
+extension Float {
+    func removeZerosFromEnd() -> String {
+        let formatter = NumberFormatter()
+        let number = NSNumber(value: self)
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2 //maximum digits in Double after dot (maximum precision)
+        return String(formatter.string(from: number) ?? "")
     }
 }

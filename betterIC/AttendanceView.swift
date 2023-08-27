@@ -11,16 +11,16 @@ import Foundation
 struct AttendanceView: View {
     
     @State private var root: [Quarter] = []
-    @State private var inQuarter: Int = 0
+    @State private var inTerm: Int = 0
     
     var body: some View {
         NavigationStack {
             // Show the List only if data is available
             if !root.isEmpty {
                 List {
-                    ForEach(Array(root[inQuarter].courses.enumerated()), id: \.element.id) { (index, course) in
-                        AttendanceElement(root: $root, 
-                                          inQuarter: $inQuarter,
+                    ForEach(Array(root[inTerm].courses.enumerated()), id: \.element.id) { (index, course) in
+                        AttendanceElement(root: $root,
+                                          inTerm: $inTerm,
                                           courseIndex: index)
                     }
                 }
@@ -33,7 +33,7 @@ struct AttendanceView: View {
             let getData = GetData()
             getData.processData { processedRoot in
                 self.root = processedRoot
-                self.inQuarter = getData.findQuarter()
+                self.inTerm = getData.findQuarter()
             }
         }
     }
@@ -41,7 +41,7 @@ struct AttendanceView: View {
 
 struct AttendanceElement: View {
     @Binding var root: [Quarter]
-    @Binding var inQuarter: Int
+    @Binding var inTerm: Int
     
     let courseIndex: Int
 //    let courseName: String
@@ -54,13 +54,13 @@ struct AttendanceElement: View {
     var body: some View {
         NavigationStack {
             HStack {
-                Text(root[inQuarter].courses[courseIndex].name)
+                Text(root[inTerm].courses[courseIndex].name)
                     .font(.headline)
                     .bold()
                 Spacer()
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("Absences: 0")
-                    Text("Tardies: 0")
+                    Text("Absences: \(root[inTerm].courses[courseIndex].attendance.absences)")
+                    Text("Tardies: \(root[inTerm].courses[courseIndex].attendance.tardies)")
                 }
             }
             

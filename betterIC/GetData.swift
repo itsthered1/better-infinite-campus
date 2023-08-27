@@ -23,16 +23,21 @@ struct Course: Decodable, Identifiable {
     let teacher: String
     let grades: Grades?
     let assignments: [Assignments]
+    let attendance: Attendance
     let _id: Int
-    //let attendance: Attendance?
 }
 
 struct Grades: Decodable {
     let id = UUID()
-    let score:  String
-    let percent: Int
-    let totalPoints: Int
-    let pointsEarned: Int
+    let score: String
+    let percent: Float
+    let totalPoints: Float
+    let pointsEarned: Float
+}
+
+struct Attendance: Decodable {
+    let absences: Int
+    let tardies: Int
 }
 
 struct Assignments: Decodable {
@@ -41,7 +46,7 @@ struct Assignments: Decodable {
     let _idTerm: Int
     let termSeq: Int
     let category: String
-    let weight: Int
+    let weight: Float
     let name: String
     let assigned: String
     let due: String
@@ -51,13 +56,9 @@ struct Assignments: Decodable {
     let totalPoints: Float
     let missing: Bool?
     let late: Bool?
-//    let isGraded: Bool
 }
 
-//struct Attendance: Decodable {
-//    let tardies: Int
-//    let absences: Int
-//}
+
 //
 //struct Placement: Decodable {
 //    let periodName: String
@@ -69,7 +70,7 @@ struct Assignments: Decodable {
 
 class GetData {
     private var root: [Quarter] = []
-    private var inQuarter: Int = 0
+    private var inTerm: Int = 0
     
     func fetch (from urlString: String, completion: @escaping (Result<Data, Error>) -> Void) {
         if let url = URL(string: urlString) {
@@ -91,7 +92,7 @@ class GetData {
     }
     
     func processData (completion: @escaping ([Quarter]) -> Void) {
-        fetch(from: "http://192.168.20.146:3000/api/courses") { result in
+        fetch(from: "http://192.168.20.183:3000/api/courses") { result in
             switch result {
             case .success(let data):
                 do {
@@ -101,6 +102,17 @@ class GetData {
                     print("root is empty: ", self.root.isEmpty)
                     print(self.root)
                     completion(self.root)
+                } catch DecodingError.dataCorrupted(let context) {
+                    print(context)
+                } catch DecodingError.keyNotFound(let key, let context) {
+                    print("Key '\(key)' not found:", context.debugDescription)
+                    print("codingPath:", context.codingPath)
+                } catch DecodingError.valueNotFound(let value, let context) {
+                    print("Value '\(value)' not found:", context.debugDescription)
+                    print("codingPath:", context.codingPath)
+                } catch DecodingError.typeMismatch(let type, let context) {
+                    print("Type '\(type)' mismatch:", context.debugDescription)
+                    print("codingPath:", context.codingPath)
                 } catch {
                     print("failed to retreive data")
                     completion([])
@@ -128,24 +140,24 @@ class GetData {
                 
                 if currentDate > quarter4StartDate && currentDate <= quarter4EndDate {
                     print("Student is in Quarter 4")
-                    self.inQuarter = 3
+                    self.inTerm = 3
                 } else if currentDate > quarter3StartDate && currentDate <= quarter3EndDate {
                     print("Student is in Quarter 3")
-                    self.inQuarter = 2
+                    self.inTerm = 2
                 } else if currentDate > quarter2StartDate && currentDate <= quarter2EndDate {
                     print("Student is in Quarter 2")
-                    self.inQuarter = 1
+                    self.inTerm = 1
                 } else if currentDate > quarter1StartDate && currentDate <= quarter1EndDate {
                     print("Student is in Quarter 1")
-                    self.inQuarter = 0
+                    self.inTerm = 0
                 } else {
-                    self.inQuarter = 0
+                    self.inTerm = 0
                     print("Student is not in any quarter (has the school year started or ended?")
                 }
             } else {
                 print("Error parsing date strings")
             }
-            return self.inQuarter
+            return self.inTerm
         }
         return 0
     }
